@@ -188,6 +188,7 @@ html[data-navigation-motion="footer-slide"]::view-transition-new(root) { animati
 .footer-policy { left: 57%; top: 43%; width: 34%; height: 10%; }
 .footer-terms { left: 57%; top: 65%; width: 30%; height: 10%; }
 .footer-legal { left: 57%; top: 87%; width: 39%; height: 10%; }
+.footer-faq-label { position: absolute; z-index: 2; top: 22%; left: 57%; width: 30%; height: 10%; overflow: hidden; background: #ffe1ad; color: #706350; font-family: var(--en); font-size: 8px; font-weight: 700; letter-spacing: -.2px; line-height: 20px; pointer-events: none; }
 .footer-logo-cover { position: absolute; z-index: 2; top: 18%; left: 20.5%; width: 22%; height: 34%; background: #ffe1ad; pointer-events: none; }
 .footer-brand { position: absolute; z-index: 3; top: 18%; left: 31.1%; width: 18%; height: 34%; object-fit: contain; transform: translateX(-50%); pointer-events: none; }
 .footer-social-cover { position: absolute; z-index: 2; top: 54%; left: 15%; width: 42%; height: 14%; background: #ffe1ad; }
@@ -204,11 +205,10 @@ html[data-navigation-motion="footer-slide"]::view-transition-new(root) { animati
   color: #706350;
   transform: translateX(-50%);
 }
-.footer-social-row .social-mark svg { width: 22px; height: 22px; }
+.footer-social-row .social-mark img { display: block; width: 100%; height: 100%; object-fit: contain; }
 .footer-social-row .social-note { min-width: 37px; }
-.footer-social-row .social-youtube svg { width: 24px; height: 18px; }
-.footer-social-row .social-youtube .youtube-body { fill: currentColor; }
-.footer-social-row .social-youtube .youtube-play { fill: #ffe1ad; }
+.footer-social-row .social-youtube { width: 24px; height: 18px; }
+.footer-social-row .social-youtube img { width: 24px; height: 18px; }
 
 /* Opening screen keeps the loading message and bar centered as one unit. */
 .loading-screen { position: absolute; inset: 0; display: grid; place-items: center; }
@@ -562,7 +562,7 @@ html[data-navigation-motion="footer-slide"]::view-transition-new(root) { animati
 .product-dream .add-button, .product-sunshine .add-button { top: 240px; }
 .add-circle { display: grid; place-items: center; width: 17px; height: 17px; border: 2px solid currentColor; border-radius: 50%; font-family: var(--jp); font-size: 14px; line-height: 13px; }
 
-/* Empty board panels on the source News, Gallery and F&Q pages */
+/* Empty board panels on the source News, Gallery and FAQ pages */
 .blank-panel {
   position: absolute;
   top: var(--panel-y);
@@ -925,7 +925,6 @@ html[data-navigation-motion="footer-slide"]::view-transition-new(root) { animati
 @keyframes drawer-slide-in { from { transform: translateX(100%); } to { transform: translateX(0); } }
 @keyframes drawer-slide-out { from { transform: translateX(0); } to { transform: translateX(100%); } }
 .menu-drawer.closing { animation: drawer-slide-out 500ms cubic-bezier(.42, 0, .58, 1) both; }
-.menu-drawer::before { position: absolute; top: 102px; bottom: 0; left: 18px; border-left: 1px dashed #df75fd; content: ""; }
 .menu-close {
   position: absolute;
   top: 25px;
@@ -991,14 +990,12 @@ html[data-navigation-motion="footer-slide"]::view-transition-new(root) { animati
 .drawer-legal { position: absolute; top: 493px; left: 39px; display: grid; gap: 8px; width: 220px; color: #676767; font-family: var(--jp); font-size: 8px; font-weight: 700; letter-spacing: .04em; line-height: 14px; }
 .drawer-legal a.active { transform: scale(1.04); transform-origin: left center; }
 .drawer-social { position: absolute; top: 594px; left: 39px; display: flex; align-items: center; gap: 12px; color: #706d68; }
-.social-mark { display: grid; flex: 0 0 auto; place-items: center; color: inherit; }
-.social-mark svg { width: 22px; height: 22px; overflow: visible; fill: none; stroke: currentColor; stroke-width: 2; stroke-linecap: round; stroke-linejoin: round; }
-.social-mark .icon-dot { fill: currentColor; stroke: none; }
-.social-threads svg { stroke-width: 1.8; }
-.social-note { min-width: 37px; font-family: Arial, sans-serif; font-size: 15px; font-weight: 700; letter-spacing: -.7px; }
-.social-youtube svg { width: 24px; height: 18px; }
-.social-youtube .youtube-body { fill: currentColor; stroke: none; }
-.social-youtube .youtube-play { fill: var(--paper); stroke: none; }
+.social-mark { display: grid; flex: 0 0 auto; width: 22px; height: 22px; place-items: center; color: inherit; text-decoration: none; }
+.social-mark img { display: block; width: 22px; height: 22px; object-fit: contain; }
+.social-note { width: 37px; height: 22px; }
+.social-note img { width: 37px; height: 22px; }
+.social-youtube { width: 24px; height: 18px; }
+.social-youtube img { width: 24px; height: 18px; }
 
 @media (max-width: 392px) {
   .artboard { margin-left: 0; margin-right: 0; }

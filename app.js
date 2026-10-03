@@ -221,31 +221,23 @@ function footer() {
     <span class="footer-social-cover" aria-hidden="true"></span>
     ${socialMarks('footer-social-row')}
     <a class="footer-hit footer-logo" href="#home" onclick="goFromFooter('home');return false" aria-label="Home"></a>
-    <a class="footer-hit footer-faq" href="#faq" onclick="goFromFooter('faq');return false" aria-label="F and Q"></a>
+    <a class="footer-hit footer-faq" href="#faq" onclick="goFromFooter('faq');return false" aria-label="FAQ"></a>
+    <span class="footer-faq-label" aria-hidden="true">FAQ</span>
     <a class="footer-hit footer-policy" href="#policy" onclick="goFromFooter('policy');return false" aria-label="Privacy policy"></a>
     <a class="footer-hit footer-terms" href="#terms" onclick="goFromFooter('terms');return false" aria-label="Terms of use"></a>
     <a class="footer-hit footer-legal" href="#commerce" onclick="goFromFooter('commerce');return false" aria-label="Legal notice"></a>
   </footer>`;
 }
 
-function instagramIcon() {
-  return `<svg viewBox="0 0 24 24" aria-hidden="true"><rect x="3.1" y="3.1" width="17.8" height="17.8" rx="5"/><circle cx="12" cy="12" r="4.1"/><circle class="icon-dot" cx="17.5" cy="6.8" r="1"/></svg>`;
-}
-
-function threadsIcon() {
-  return `<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M17.9 9.3c-.3-3.3-2.3-5.4-5.8-5.6-4.3-.3-7.2 2.9-7.2 8.1 0 5.1 2.5 8.5 7.1 8.5 3.2 0 5.3-1.6 5.3-4.3 0-2.1-1.2-3.3-3.1-3.3-2.4 0-4 1.6-5 4.1"/><path d="M8.1 9.5c1.2 1 2.9 1.5 5.1 1.7 3.7.3 5.7 1.7 5.7 4.4 0 1.2-.4 2.2-1.2 3"/></svg>`;
-}
-
-function youtubeIcon() {
-  return `<svg viewBox="0 0 24 18" aria-hidden="true"><path class="youtube-body" d="M23.2 4.2a3 3 0 0 0-2.1-2.1C19.2 1.6 12 1.6 12 1.6s-7.2 0-9.1.5A3 3 0 0 0 .8 4.2 31 31 0 0 0 .3 9a31 31 0 0 0 .5 4.8 3 3 0 0 0 2.1 2.1c1.9.5 9.1.5 9.1.5s7.2 0 9.1-.5a3 3 0 0 0 2.1-2.1 31 31 0 0 0 .5-4.8 31 31 0 0 0-.5-4.8Z"/><path class="youtube-play" d="m9.6 12.4 5.8-3.4-5.8-3.4v6.8Z"/></svg>`;
-}
-
 function socialMarks(className) {
+  const links = [
+    ['instagram', 'Instagram', 'https://www.instagram.com/donttell.official?stkn=MWc0YnZzMmJpZjA0aw=='],
+    ['threads', 'Threads', 'https://www.threads.com/@donttell.official?igshid=NTc4MTIwNjQ2YQ=='],
+    ['note', 'note', 'https://note.com/heartofchild'],
+    ['youtube', 'YouTube', 'https://youtube.com/@donttell_anybody?si=v5xjX-AlOBrqSOIB']
+  ];
   return `<div class="${className}" aria-label="Social media">
-    <span class="social-mark social-instagram" role="img" aria-label="Instagram">${instagramIcon()}</span>
-    <span class="social-mark social-threads" role="img" aria-label="Threads">${threadsIcon()}</span>
-    <span class="social-mark social-note" role="img" aria-label="note">note</span>
-    <span class="social-mark social-youtube" role="img" aria-label="YouTube">${youtubeIcon()}</span>
+    ${links.map(([id, label, href]) => `<a class="social-mark social-${id}" href="${href}" target="_blank" rel="noopener noreferrer" aria-label="${label}"><img src="${A}social-${id}.svg" alt=""></a>`).join('')}
   </div>`;
 }
 
@@ -465,7 +457,7 @@ function newsPage() {
 }
 
 function faqPage() {
-  return `<main class="faq-screen">${titlebar('F&Q')}${blankPanels(4, 226)}</main>`;
+  return `<main class="faq-screen">${titlebar('FAQ')}${blankPanels(4, 226)}</main>`;
 }
 
 function contactPage() {
@@ -700,7 +692,7 @@ function menuOverlay() {
       }).join('')}</nav>
       <button class="drawer-mybox${isActive('mybox') ? ' active' : ''}" onclick="goFromMenu('mybox')"><span class="box-icon">${boxSvg()}</span><span>My Box</span><span class="drawer-arrow" aria-hidden="true"><svg viewBox="0 0 16 20"><path d="m5 4 6 6-6 6"/></svg></span></button>
       <nav class="drawer-legal" aria-label="Help and legal links">
-        <a class="${isActive('faq') ? 'active' : ''}" href="#faq" onclick="goFromMenu('faq');return false">F&Q</a>
+        <a class="${isActive('faq') ? 'active' : ''}" href="#faq" onclick="goFromMenu('faq');return false">FAQ</a>
         <a class="${isActive('policy') ? 'active' : ''}" href="#policy" onclick="goFromMenu('policy');return false">プライバシーポリシー</a>
         <a class="${isActive('terms') ? 'active' : ''}" href="#terms" onclick="goFromMenu('terms');return false">利用規約</a>
         <a class="${isActive('commerce') ? 'active' : ''}" href="#commerce" onclick="goFromMenu('commerce');return false">特定商取引法に基づく表記</a>
