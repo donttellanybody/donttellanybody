@@ -17,16 +17,17 @@ const products = [
     description: '夜空を見上げると僅かながらではあるが\n小さくも美しい星たちが輝いているのがわかる。\nそのどれか一つで良いから手に取ることができ\nその輝きを手のひらの中で見つめることができれば\nその瞬間は確実に人生の表紙になるなぁ。'
   },
   {
-    id: 'dream', category: 'mirror', name: 'Time To Dream', size: '38×38 cm', price: 4200,
+    id: 'dream', category: 'mirror', name: 'Time To Dream', size: '38×38 cm', price: 3600,
     image: 'product-time-to-dream.png',
     description: 'ここがなにひとつ、しがらみのない世界だとして。\n自分としっかり目を合わせ、自分に問いかける。\n「君が人生賭けて叶えたいことって、何だっけ？」\n浮かんだ答えこそが、あなたの心底に眠る夢である。\nさぁ早く起きて、目を覚まして。もう夢を見る時間だ。'
   },
   {
-    id: 'sunshine', category: 'mirror', name: "You're my Sunshine", size: '38×38 cm', price: 4200,
+    id: 'sunshine', category: 'mirror', name: "You're my Sunshine", size: '38×38 cm', price: 3600,
     image: 'product-youre-my-sunshine.png',
     description: '人生に価値を見出せない、そんな日もあるよね。\nけれど、これを見るたび思い出して。\n自分を突き動かせるのは自分だけであること。\n誰よりも自分自身が自分のエネルギー、\n天高く輝くお日さまのようにあろう☼'
   }
 ];
+const MAX_CART_QUANTITY = 2147483647;
 
 const footerTop = {
   home: 1137, story: 973, shop: 970, gallery: 1544, contact: 677,
@@ -42,9 +43,17 @@ const frameHeight = {
 function readCart() {
   try {
     const saved = localStorage.getItem('dtay-cart');
-    return saved === null ? { stay: 1 } : JSON.parse(saved) || {};
+    if (saved === null) return {};
+    const parsed = JSON.parse(saved);
+    if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
+    return Object.fromEntries(products.flatMap((product) => {
+      const quantity = parsed[product.id];
+      return Number.isSafeInteger(quantity) && quantity > 0 && quantity <= MAX_CART_QUANTITY
+        ? [[product.id, quantity]]
+        : [];
+    }));
   } catch {
-    return { stay: 1 };
+    return {};
   }
 }
 
@@ -144,13 +153,15 @@ function saveCart() {
 }
 
 function addToBox(id) {
-  state.cart[id] = (state.cart[id] || 0) + 1;
+  if (!products.some((product) => product.id === id)) return;
+  state.cart[id] = Math.min(MAX_CART_QUANTITY, (state.cart[id] || 0) + 1);
   saveCart();
   setRoute('mybox');
 }
 
 function changeQuantity(id, delta) {
-  const next = Math.max(0, (state.cart[id] || 0) + delta);
+  if (!products.some((product) => product.id === id)) return;
+  const next = Math.max(0, Math.min(MAX_CART_QUANTITY, (state.cart[id] || 0) + delta));
   if (next === 0) delete state.cart[id]; else state.cart[id] = next;
   saveCart();
   render();
@@ -822,9 +833,8 @@ pageFromHash();
 render();
 window.setTimeout(() => {
   state.isLoading = false;
-  state.page = 'home';
-  state.productId = null;
-  history.replaceState({ page: 'home' }, '', '#home');
+  pageFromHash();
+  history.replaceState({ page: state.page }, '', location.hash || '#home');
   window.scrollTo(0, 0);
   render();
 }, 2500);
