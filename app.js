@@ -7,7 +7,7 @@ const products = [
     description: '生きる上で一番大切なマインドはこれなんだ！！という\n世間に蔓延る固定概念に対してのアンチテーゼから\nこの全てが始まったと言っても過言ではない。\nいつまでも夢を追って、叶えるために生きる。\n人生に大きな熱量を持つ人々で世界が溢れますように。'
   },
   {
-    id: 'heart', category: 'sticker', name: 'Things of the heart', size: '6×6 cm', price: 200,
+    id: 'heart', category: 'sticker', name: 'Thingsoftheart', size: '6×6 cm', price: 200,
     image: 'product-things-heart.png',
     description: '[thing soft heart] 心身ともに無くては生きられない\nただひとつのもの、それは柔らかで優しいハート。\n[things of the art] それはアートにとっても同じ。\n唯一無二性、内包するのは感情、想い、主張。\n決して機械に制すことはできない領域である。'
   },
@@ -35,7 +35,7 @@ const footerTop = {
 };
 const frameHeight = {
   home: 1337, story: 1173, shop: 1170, gallery: 1744, contact: 877,
-  news: 1742, mybox: 3184, checkout: 1030, thanks: 919, terms: 3969, policy: 2079,
+  news: 1742, mybox: 3184, thanks: 919, terms: 3969, policy: 2079,
   commerce: 1593, faq: 1442, 'product-sticker': 1021,
   'product-dream': 1090, 'product-sunshine': 1108
 };
@@ -61,9 +61,11 @@ const state = {
   page: 'home', productId: null, previousPage: 'shop', shopTab: 'sticker',
   cart: readCart(), menuOpen: false, menuClosing: false, menuCloseTimer: null,
   skipNextScreenAnimation: false, hasRendered: false, isLoading: true,
-  productImageTransitionId: null, shopSliderTransition: null, footerTransition: false
+  productImageTransitionId: null, shopSliderTransition: null, footerTransition: false,
+  productPanelMotion: false, cartNoticeVisible: false
 };
 const app = document.getElementById('app');
+let activeScreenTransition = null;
 
 function pageFromHash() {
   const oldPage = state.page;
@@ -76,7 +78,7 @@ function pageFromHash() {
     return;
   }
   state.productId = null;
-  state.page = key === 'shipping' ? 'faq' : (key || 'home');
+  state.page = key === 'shipping' ? 'faq' : key === 'checkout' ? 'mybox' : (key || 'home');
   if (!frameHeight[state.page]) state.page = 'home';
   if (oldPage === 'product' && state.page !== 'shop') clearProductImageTransition();
   else if (state.productImageTransitionId && state.page !== 'shop') clearProductImageTransition();
@@ -89,10 +91,10 @@ function setRoute(page, { push = true, closeMenuAfter = false } = {}) {
   state.menuOpen = closeAfterTransition;
   state.menuClosing = closeAfterTransition;
   state.productId = null;
-  state.page = page === 'shipping' ? 'faq' : page;
+  state.page = page === 'shipping' ? 'faq' : page === 'checkout' ? 'mybox' : page;
   if (!frameHeight[state.page]) state.page = 'home';
   if (push) history.pushState({ page: state.page }, '', `#${state.page}`);
-  window.scrollTo(0, 0);
+  window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   render();
   if (closeAfterTransition) scheduleMenuClose();
 }
@@ -112,7 +114,7 @@ function goFromFooter(page) {
   app.querySelector('.detail-panel')?.style.setProperty('view-transition-name', 'none');
   app.querySelector('.shop-tab-slider')?.style.setProperty('view-transition-name', 'none');
   state.shopSliderTransition = null;
-  state.footerTransition = true;
+  state.footerTransition = false;
   setRoute(page);
 }
 
@@ -129,12 +131,13 @@ function openProduct(id, event) {
   const sourceImage = event?.currentTarget?.querySelector('img');
   if (sourceImage) sourceImage.style.setProperty('view-transition-name', 'product-image');
   state.productImageTransitionId = id;
-  state.previousPage = state.page === 'shop' ? 'shop' : 'shop';
+  state.previousPage = state.page;
+  state.productPanelMotion = true;
   state.productId = id;
   state.page = 'product';
   state.menuOpen = false;
   history.pushState({ page: 'product', productId: id, previousPage: state.previousPage }, '', `#product-${id}`);
-  window.scrollTo(0, 0);
+  window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   render();
 }
 
@@ -144,7 +147,7 @@ function closeProduct() {
   state.page = target;
   // Replace the detail URL so browser Back returns to the page before Shop.
   history.replaceState({ page: target }, '', `#${target}`);
-  window.scrollTo(0, 0);
+  window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   render();
 }
 
@@ -156,7 +159,8 @@ function addToBox(id) {
   if (!products.some((product) => product.id === id)) return;
   state.cart[id] = Math.min(MAX_CART_QUANTITY, (state.cart[id] || 0) + 1);
   saveCart();
-  setRoute('mybox');
+  showCartNotice();
+  closeProduct();
 }
 
 function changeQuantity(id, delta) {
@@ -164,12 +168,14 @@ function changeQuantity(id, delta) {
   const next = Math.max(0, Math.min(MAX_CART_QUANTITY, (state.cart[id] || 0) + delta));
   if (next === 0) delete state.cart[id]; else state.cart[id] = next;
   saveCart();
+  state.skipNextScreenAnimation = true;
   render();
 }
 
 function removeFromBox(id) {
   delete state.cart[id];
   saveCart();
+  state.skipNextScreenAnimation = true;
   render();
 }
 
@@ -226,17 +232,15 @@ function header() {
 
 function footer() {
   return `<footer class="footer" aria-label="Footer navigation">
-    <img class="footer-art" src="${A}footer-reference-transparent.png" alt="DON'T TELL ANYBODY footer">
-    <span class="footer-logo-cover" aria-hidden="true"></span>
-    <img class="footer-brand" src="${A}main-logo.png" alt="" aria-hidden="true">
-    <span class="footer-social-cover" aria-hidden="true"></span>
+    <a class="footer-home" href="#home" onclick="goFromFooter('home');return false" aria-label="Home"><img src="${A}main-logo.png" alt="DON'T TELL ANYBODY"></a>
     ${socialMarks('footer-social-row')}
-    <a class="footer-hit footer-logo" href="#home" onclick="goFromFooter('home');return false" aria-label="Home"></a>
-    <a class="footer-hit footer-faq" href="#faq" onclick="goFromFooter('faq');return false" aria-label="FAQ"></a>
-    <span class="footer-faq-label" aria-hidden="true">FAQ</span>
-    <a class="footer-hit footer-policy" href="#policy" onclick="goFromFooter('policy');return false" aria-label="Privacy policy"></a>
-    <a class="footer-hit footer-terms" href="#terms" onclick="goFromFooter('terms');return false" aria-label="Terms of use"></a>
-    <a class="footer-hit footer-legal" href="#commerce" onclick="goFromFooter('commerce');return false" aria-label="Legal notice"></a>
+    <nav class="footer-links" aria-label="Help and legal links">
+      <a href="#faq" onclick="goFromFooter('faq');return false">FAQ</a>
+      <a href="#policy" onclick="goFromFooter('policy');return false">プライバシーポリシー</a>
+      <a href="#terms" onclick="goFromFooter('terms');return false">利用規約</a>
+      <a href="#commerce" onclick="goFromFooter('commerce');return false">特定商取引法に基づく表記</a>
+    </nav>
+    <p class="footer-copyright">Copyright © 2025 DON’T TELL ANYBODY All rights reserved.</p>
   </footer>`;
 }
 
@@ -361,8 +365,8 @@ function homePage() {
   const copy = 'しーっ。ここは僕らのための秘密基地。誰にも言っちゃいけないからね。思いのままに自分自身を表現し、好きなモノに囲まれて過ごす場所。オモチャたちに映るのはとっても自由な、あなたのあるがままの姿。思い出そうよ、コドモゴコロ。あなたの夢は何ですか・・・？';
   return `<main class="home-screen">
     <section class="home-hero" aria-label="Like child. Play with toys. Show what you are.">
-      <h1 class="hero-title-art"><img src="${A}hero-title.png" alt="LIKE CHILD. PLAY WITH TOYS. SHOW WHAT YOU ARE."><img class="reflection" src="${A}hero-reflection.png" alt=""></h1>
-      <img class="hero-copy-art" src="${A}hero-copy.png" alt="${copy}">
+      <h1 class="hero-title-art"><img src="${A}hero-title.svg" alt="LIKE CHILD. PLAY WITH TOYS. SHOW WHAT YOU ARE."><img class="reflection" src="${A}hero-reflection.svg" alt=""></h1>
+      <img class="hero-copy-art" src="${A}hero-copy.svg" alt="${copy}">
     </section>
     <section class="home-pickup">
       <h2 class="section-heading">Pickup Toys</h2>
@@ -421,7 +425,7 @@ function shopPage() {
       <img class="board-art" src="${A}sugoroku-board.png" alt="">
       ${mirror ? `<button class="board-item mirror-dream" aria-label="Time To Dream mirror" onclick="openProduct('dream', event)"><img${productImageStyle('dream')} src="${A}product-time-to-dream.png" alt="Time To Dream mirror"></button>
         <button class="board-item mirror-sunshine" aria-label="You're my Sunshine mirror" onclick="openProduct('sunshine', event)"><img${productImageStyle('sunshine')} src="${A}product-youre-my-sunshine.png" alt="You're my Sunshine mirror"></button>` : `<button class="board-item sticker-stay" aria-label="Stay child forever sticker" onclick="openProduct('stay', event)"><img${productImageStyle('stay')} src="${A}product-stay-forever.png" alt="Stay child forever"></button>
-        <button class="board-item sticker-heart" aria-label="Things of the heart sticker" onclick="openProduct('heart', event)"><img${productImageStyle('heart')} src="${A}product-things-heart.png" alt="Things of the heart"></button>
+        <button class="board-item sticker-heart" aria-label="Thingsoftheart sticker" onclick="openProduct('heart', event)"><img${productImageStyle('heart')} src="${A}product-things-heart.png" alt="Thingsoftheart"></button>
         <button class="board-item sticker-star" aria-label="Wish star sticker" onclick="openProduct('star', event)"><img${productImageStyle('star')} src="${A}product-wish-star.png" alt="Wish star"></button>`}
     </div>
     <p class="shop-caption">EXPECT FOR NEXT PHASE!</p>
@@ -521,7 +525,7 @@ function productPage() {
       <div class="detail-divider"></div>
       <p class="detail-description">${product.description}</p>
       <button class="detail-close" onclick="closeProduct()" aria-label="Back to shop">×</button>
-      <button class="add-button" onclick="addToBox('${product.id}')"><span class="add-circle">＋</span> ADD TO MY BOX</button>
+      <button class="add-button" onclick="addToBox('${product.id}')"><span class="add-circle" aria-hidden="true"></span> ADD TO MY BOX</button>
     </section>
   </main>`;
 }
@@ -537,7 +541,7 @@ function goShopTab(tab) {
 
 function myBoxPage() {
   const items = products.filter((product) => state.cart[product.id] > 0);
-  const subtotal = items.reduce((sum, product) => sum + product.price * state.cart[product.id], 0);
+  const subtotal = cartSubtotal(items);
   const cards = items.map((product, i) => `<article class="box-card" style="top:${229 + i * 170}px">
     <div class="box-card-title">${product.name}</div>
     <div class="box-card-size">${product.size.replace('×', 'x')}</div>
@@ -554,10 +558,14 @@ function myBoxPage() {
   return `<main class="mybox-screen">
     <div class="mybox-title"><span class="box-icon" aria-hidden="true">${boxSvg()}</span><span>My Box</span></div>
     ${cards || `<div class="empty-box"><p>Your box is waiting for a little joy.</p><button onclick="go('shop')">Browse toys</button></div>`}
-    ${items.length ? `<section class="box-checkout-summary" style="top:${404 + (items.length - 1) * 170}px">
-      <p>Subtotal <strong>¥${subtotal.toLocaleString('en-US')}</strong></p>
-      <button onclick="go('checkout')">Continue to checkout <span aria-hidden="true">›</span></button>
-    </section>` : ''}
+    <section class="box-checkout-summary" style="top:${boxSummaryTop(items.length)}px">
+      <p class="box-subtotal">SUBTOTAL <strong>¥${subtotal.toLocaleString('en-US')}</strong></p>
+      <button id="shopify-checkout-button" class="checkout-pay-button" onclick="startShopifyCheckout()" ${checkoutConfigReady(items) ? '' : 'disabled'}>Continue to Shopify checkout</button>
+      <h2>Ready for a little joy?</h2>
+      <p class="checkout-note">送料はShopifyの決済画面でご確認いただけます。</p>
+      <p id="shopify-checkout-status" class="checkout-status" role="status">${!items.length ? '商品を追加するとShopify決済に進めます。' : checkoutConfigReady(items) ? 'Shopifyの安全な決済画面へ進みます。' : '現在、決済への接続を準備しています。'}</p>
+      <button class="checkout-back" onclick="backToMyBoxItems()">← Back to My Box</button>
+    </section>
   </main>`;
 }
 
@@ -571,28 +579,12 @@ function checkoutConfigReady(items) {
     && items.length && items.every((product) => config.variantIds?.[product.id]));
 }
 
-function checkoutPage() {
-  const items = products.filter((product) => state.cart[product.id] > 0);
-  const ready = checkoutConfigReady(items);
-  const rows = items.map((product) => `<li>
-    <img class="checkout-item-image" src="${A + product.image}" alt="">
-    <span class="checkout-item-copy"><span>${product.name}</span><small>× ${state.cart[product.id]}</small></span>
-    <strong>¥${(product.price * state.cart[product.id]).toLocaleString('en-US')}</strong>
-  </li>`).join('');
-  return `<main class="checkout-screen">
-    ${titlebar('Checkout')}
-    <section class="checkout-panel" aria-label="Order summary">
-      <h2>Ready for a little joy?</h2>
-      ${items.length
-        ? `<ul class="checkout-items">${rows}</ul>
-          <p class="checkout-total"><span>Subtotal</span><strong>¥${cartSubtotal(items).toLocaleString('en-US')}</strong></p>
-          <p class="checkout-note">送料はShopifyの決済画面でご確認いただけます。</p>`
-        : `<p class="checkout-empty">Your box is waiting for a little joy.</p><button class="checkout-browse" onclick="go('shop')">Browse toys</button>`}
-      ${items.length ? `<button id="shopify-checkout-button" class="checkout-pay-button" onclick="startShopifyCheckout()" ${ready ? '' : 'disabled'}>Continue to Shopify checkout</button>` : ''}
-      <p id="shopify-checkout-status" class="checkout-status" role="status">${!items.length ? 'カートに商品を追加すると、ここでShopify決済に進めます。' : ready ? 'Shopifyの安全な決済画面へ進みます。' : 'Shopifyの接続情報を設定すると、ここから決済できます。'}</p>
-      <button class="checkout-back" onclick="go('mybox')">← Back to My Box</button>
-    </section>
-  </main>`;
+function boxSummaryTop(count) {
+  return count ? 404 + (count - 1) * 170 : 365;
+}
+
+function backToMyBoxItems() {
+  document.querySelector('.mybox-title')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 async function startShopifyCheckout() {
@@ -643,29 +635,84 @@ async function startShopifyCheckout() {
 }
 
 function boxSvg() {
-  return `<svg viewBox="0 0 24 20" aria-hidden="true"><path d="M3 7.2 12 3l9 4.2-9 4.1L3 7.2Z"/><path d="M3 7.2v8.5l9 4.1v-8.5M21 7.2v8.5l-9 4.1M12 3v4.1"/><path d="m7.2 5.3 9.3 4.4"/></svg>`;
+  return `<img src="${A}icon-box.svg" alt="" aria-hidden="true">`;
 }
 
 function trashSvg() {
-  return `<svg viewBox="0 0 12 14" aria-hidden="true"><path d="M2.5 4.2h7M4.3 2.3h3.4M3.3 4.2l.5 7.1h4.4l.5-7.1M4.8 5.8v3.9M7.2 5.8v3.9"/></svg>`;
+  return `<img src="${A}icon-trash.svg" alt="" aria-hidden="true">`;
 }
 
+let noticeTimer;
+function cartNoticeContent() {
+  return `<span class="box-icon">${boxSvg()}</span><span>My Boxに追加しました</span><button onclick="go('mybox')">My Boxを見る</button>`;
+}
+
+function showCartNotice() {
+  window.clearTimeout(noticeTimer);
+  state.cartNoticeVisible = true;
+  noticeTimer = window.setTimeout(() => {
+    state.cartNoticeVisible = false;
+    const notice = document.getElementById('cart-notice');
+    if (notice) notice.hidden = true;
+  }, 3500);
+}
+
+function floatingBox() {
+  const count = Object.values(state.cart).reduce((sum, quantity) => sum + quantity, 0);
+  return `<button class="floating-box" onclick="go('mybox')" aria-label="Open My Box${count ? `, ${count} items` : ''}"><span class="box-icon">${boxSvg()}</span>${count ? `<span class="box-count">${count}</span>` : ''}</button>`;
+}
+
+function updateFloatingBox() {
+  const button = document.querySelector('.floating-box');
+  const board = app.querySelector('.artboard:not([aria-hidden="true"])');
+  const footer = board?.querySelector('.footer-position');
+  if (!button || !board || !footer) return;
+  const rect = board.getBoundingClientRect();
+  const footerTop = footer.getBoundingClientRect().top;
+  const bottom = Math.max(20, window.innerHeight - footerTop + 16);
+  button.style.right = `${Math.max(16, window.innerWidth - rect.right + 16)}px`;
+  button.style.bottom = `${bottom}px`;
+  button.hidden = footerTop < 72 || state.menuOpen;
+}
+
+function updatePageGeometry() {
+  const board = app.querySelector('.artboard:not([aria-hidden="true"])');
+  const footer = board?.querySelector('.footer-position');
+  if (board?.classList.contains('screen-story') && footer) {
+    const lead = board.querySelector('.story-lead');
+    const bar = board.querySelector('.titlebar');
+    const body = board.querySelector('.story-copy');
+    const gap = lead.offsetTop - (bar.offsetTop + bar.offsetHeight);
+    const footerY = body.offsetTop + body.offsetHeight + gap;
+    footer.style.top = `${footerY}px`;
+    board.style.setProperty('--frame-height', `${footerY + 200}px`);
+  }
+  updateFloatingBox();
+}
+
+window.addEventListener('scroll', updateFloatingBox, { passive: true });
+window.addEventListener('resize', updatePageGeometry);
+document.fonts.ready.then(updatePageGeometry);
+document.fonts.addEventListener('loadingdone', updatePageGeometry);
+
 const thanksText = `ご注文ありがとうございます。
+
 ようこそ我々の秘密基地へ！
-TEAM STAY CHILD の一員として
+TEAM STAY CHILDの一員として
 これからの活躍、期待しています。
-あ、ちなみに忘れることは
+
+あ、ちなみに“これらのこと”は
 決して誰にも言っちゃいけませんからね。
 
 通常1〜2日ほどで
 あなたのオモチャたちは発送されます。
-お楽しみにお待ちください！`;
+お楽しみにお待ちくださいませ！`;
 
 function thanksPage() {
   return `<main class="thanks-screen">
     <h1>Now You Join Our Team!</h1>
-    <p>${thanksText}</p>
-    <button onclick="go('home')">Back To Home</button>
+    <div class="thanks-message"><p>${thanksText.replace('TEAM STAY CHILD', '<span class="thanks-team">TEAM STAY CHILD</span>')}</p>
+    <button onclick="go('home')">Back To Home</button></div>
   </main>`;
 }
 
@@ -718,7 +765,6 @@ function screenContent() {
   const renderers = {
     home: homePage, story: storyPage, shop: shopPage, gallery: galleryPage,
     news: newsPage, contact: contactPage, mybox: myBoxPage, thanks: thanksPage,
-    checkout: checkoutPage,
     faq: faqPage, terms: () => legalPage('terms'), policy: () => legalPage('policy'),
     commerce: () => legalPage('commerce')
   };
@@ -734,23 +780,24 @@ function render() {
   const pageKey = state.page === 'product'
     ? (state.productId === 'dream' || state.productId === 'sunshine' ? `product-${state.productId}` : 'product-sticker')
     : state.page;
-  const height = frameHeight[pageKey] || frameHeight.home;
+  const cartItemCount = products.filter((product) => state.cart[product.id] > 0).length;
+  const myboxFooterY = boxSummaryTop(cartItemCount) + 300;
+  const height = state.page === 'mybox' ? myboxFooterY + 200 : frameHeight[pageKey] || frameHeight.home;
   const productFooterTop = state.page === 'product'
     ? (state.productId === 'dream' ? 890 : state.productId === 'sunshine' ? 908 : 821)
     : null;
-  const footerY = productFooterTop ?? footerTop[state.page];
-  const checkoutFooterTop = state.page === 'checkout' ? 806 : null;
-  const resolvedFooterY = checkoutFooterTop ?? footerY;
-  const footerMarkup = resolvedFooterY !== undefined
-    ? `<div class="footer-position" style="top:${resolvedFooterY}px">${footer()}</div>` : '';
+  const footerY = state.page === 'mybox' ? myboxFooterY : productFooterTop ?? footerTop[state.page] ?? (height - 200);
+  const footerMarkup = `<div class="footer-position" style="top:${footerY}px">${footer()}</div>`;
   const content = screenContent().replace(/(<main\b[^>]*>)/, (opening) => `${opening}${ambientCharacters()}`);
   const markup = `<div class="artboard screen-${state.page}" style="--frame-height:${height}px">
     ${header()}
     ${content}
     ${footerMarkup}
-  </div>${menuOverlay()}`;
+  </div>${floatingBox()}<div id="cart-notice" class="cart-notice" role="status" ${state.cartNoticeVisible ? '' : 'hidden'}>${state.cartNoticeVisible ? cartNoticeContent() : ''}</div>${menuOverlay()}`;
   const shouldCrossfade = state.hasRendered && !state.menuOpen && !state.menuClosing && !state.skipNextScreenAnimation;
   const footerSlideTransition = state.footerTransition;
+  const productPanelMotion = Boolean(state.productPanelMotion);
+  state.productPanelMotion = false;
   const imageTransitionId = state.productImageTransitionId;
   const shouldFinishTabSliderTransition = state.shopSliderTransition !== null;
   const finishTabSliderTransition = () => {
@@ -770,9 +817,19 @@ function render() {
     delete document.documentElement.dataset.navigationMotion;
   };
   if (shouldCrossfade && typeof document.startViewTransition === 'function') {
+    activeScreenTransition?.skipTransition();
     if (footerSlideTransition) document.documentElement.dataset.navigationMotion = 'footer-slide';
+    else if (productPanelMotion) document.documentElement.dataset.navigationMotion = 'product-panel';
     else delete document.documentElement.dataset.navigationMotion;
-    const transition = document.startViewTransition(() => { app.innerHTML = markup; });
+    const transition = document.startViewTransition(() => { app.innerHTML = markup; updatePageGeometry(); });
+    activeScreenTransition = transition;
+    const finishNavigation = () => {
+      if (activeScreenTransition !== transition) return;
+      activeScreenTransition = null;
+      delete document.documentElement.dataset.navigationMotion;
+      updatePageGeometry();
+    };
+    transition.finished.then(finishNavigation, finishNavigation);
     if (imageTransitionId && state.page !== 'product') transition.finished.then(finishImageTransition, finishImageTransition);
     if (shouldFinishTabSliderTransition) transition.finished.then(finishTabSliderTransition, finishTabSliderTransition);
     if (footerSlideTransition) transition.finished.then(finishFooterTransition, finishFooterTransition);
@@ -780,7 +837,9 @@ function render() {
     const outgoing = app.querySelector('.artboard')?.cloneNode(true);
     app.innerHTML = markup;
     const incoming = app.querySelector('.artboard');
-    if (footerSlideTransition) {
+    if (productPanelMotion) {
+      incoming?.querySelector('.detail-panel')?.classList.add('panel-slide-in');
+    } else if (footerSlideTransition) {
       if (outgoing) {
         outgoing.classList.add('fallback-slide-old');
         outgoing.setAttribute('aria-hidden', 'true');
@@ -808,6 +867,7 @@ function render() {
     finishTabSliderTransition();
     finishFooterTransition();
   }
+  updatePageGeometry();
   state.hasRendered = true;
   state.skipNextScreenAnimation = false;
 }
@@ -835,6 +895,6 @@ window.setTimeout(() => {
   state.isLoading = false;
   pageFromHash();
   history.replaceState({ page: state.page }, '', location.hash || '#home');
-  window.scrollTo(0, 0);
+  window.scrollTo({ top: 0, left: 0, behavior: 'instant' });
   render();
 }, 2500);

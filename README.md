@@ -8,11 +8,11 @@ Open `index.html` directly in a browser. There is no build step or package insta
 
 ## Flow 3 screens and interactions
 
-- Home, Story, sticker and mirror Shop, five product detail pages, Gallery, News, Contact, Thanks, My Box, Checkout, FAQ, privacy policy, terms, and legal notice
+- Home, Story, sticker and mirror Shop, five product detail pages, Gallery, News, Contact, Thanks, My Box, FAQ, privacy policy, terms, and legal notice
 - Header and drawer navigation, a branded opening screen, cross-dissolve page transitions, shared product-image motion, sliding category tabs, product details, add-to-box, quantity controls, and saved cart state in local storage
-- Checkout creates a Shopify cart with the configured public Storefront API token and product variant IDs, then opens Shopify's hosted checkout
+- The button below My Box’s subtotal creates a Shopify cart with the configured public Storefront API token and product variant IDs, then opens Shopify's hosted checkout
 - The Contact form prepares an email addressed to `donttellanybody.official@gmail.com` with `name`, `address`, and `Message` in that order. The visitor must send it from their mail app; direct server-side delivery requires a configured email endpoint.
-- The local Thanks page is separate from the Contact form. Shopify completes checkout on its hosted checkout and shows its hosted Thank you page; rendering the Figma confirmation within Shopify requires a Thank you page checkout UI extension.
+- Shopify completes payment on its hosted checkout. The installed Checkout Blocks button on its Thank you page returns to `https://www.donttellanybody.jp/#thanks`. The local Thanks page is separate from the Contact form. Legacy `#checkout` links open My Box.
 
 ## Fonts
 
