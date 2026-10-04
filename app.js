@@ -1,4 +1,8 @@
 const A = './assets/';
+const ARTWORK_VERSION = '20261004-1';
+function artworkUrl(file) {
+  return `${A}${file}?v=${ARTWORK_VERSION}`;
+}
 
 const products = [
   {
@@ -262,7 +266,7 @@ function titlebar(label) {
 
 function sprite(id, className = '', style = '', src = '') {
   const image = src || `character-${id}.png`;
-  return `<img class="sprite ${className}" src="${A}${image}" alt="" style="${style}">`;
+  return `<img class="sprite ${className}" src="${artworkUrl(image)}" alt="" style="${style}">`;
 }
 
 function loadingPage() {
@@ -324,16 +328,16 @@ const flow3CharacterLayouts = {
     { id: 17, left: 317, top: 601, width: 103.7, height: 55.2 }
   ],
   thanks: [
-    { id: 18, centerX: 330.5, centerY: 667, width: 78, angle: 11.69 },
+    { id: 18, centerX: 275, centerY: 678, width: 78, angle: 11.69 },
     { id: 25, centerX: 189.5, centerY: 174, width: 107 },
     { id: 26, centerX: 273.5, centerY: 209.5, width: 71 },
     { id: 27, centerX: 268.1, centerY: 602.8, width: 107, angle: -17.66 },
-    { id: 23, centerX: 198.4, centerY: 558.1, width: 107, angle: -11.53 },
+    { id: 23, centerX: 202, centerY: 612, width: 85, angle: -11.53 },
     { id: 28, centerX: 44, centerY: 168, width: 68 },
     { id: 29, centerX: 140, centerY: 654, width: 108, angle: -23.01 },
-    { id: 17, centerX: 303, centerY: 517.5, width: 52 },
+    { id: 17, centerX: 343, centerY: 532, width: 52 },
     { id: 28, centerX: 370.5, centerY: 248, width: 85 },
-    { id: 26, centerX: 73.8, centerY: 521.6, width: 63.7, angle: -3.34 },
+    { id: 26, centerX: 38, centerY: 532, width: 63.7, angle: -3.34 },
     { id: 21, centerX: 348, centerY: 566.5, width: 52 },
     { id: 29, centerX: 355.5, centerY: 439.5, width: 77 },
     { id: 24, centerX: 43, centerY: 371, width: 54 },
@@ -444,10 +448,10 @@ function shopPage() {
     ${shopTabs(mirror)}
     <div class="shop-board">
       <img class="board-art" src="${A}sugoroku-board.png" alt="">
-      ${mirror ? `<button class="board-item mirror-dream" aria-label="Time To Dream mirror" onclick="openProduct('dream', event)"><img${productImageStyle('dream')} src="${A}product-time-to-dream.png" alt="Time To Dream mirror"></button>
-        <button class="board-item mirror-sunshine" aria-label="You're my Sunshine mirror" onclick="openProduct('sunshine', event)"><img${productImageStyle('sunshine')} src="${A}product-youre-my-sunshine.png" alt="You're my Sunshine mirror"></button>` : `<button class="board-item sticker-stay" aria-label="Stay child forever sticker" onclick="openProduct('stay', event)"><img${productImageStyle('stay')} src="${A}product-stay-forever.png" alt="Stay child forever"></button>
-        <button class="board-item sticker-heart" aria-label="Thingsoftheart sticker" onclick="openProduct('heart', event)"><img${productImageStyle('heart')} src="${A}product-things-heart.png" alt="Thingsoftheart"></button>
-        <button class="board-item sticker-star" aria-label="Wish star sticker" onclick="openProduct('star', event)"><img${productImageStyle('star')} src="${A}product-wish-star.png" alt="Wish star"></button>`}
+      ${mirror ? `<button class="board-item mirror-dream" aria-label="Time To Dream mirror" onclick="openProduct('dream', event)"><img${productImageStyle('dream')} src="${artworkUrl('product-time-to-dream.png')}" alt="Time To Dream mirror"></button>
+        <button class="board-item mirror-sunshine" aria-label="You're my Sunshine mirror" onclick="openProduct('sunshine', event)"><img${productImageStyle('sunshine')} src="${artworkUrl('product-youre-my-sunshine.png')}" alt="You're my Sunshine mirror"></button>` : `<button class="board-item sticker-stay" aria-label="Stay child forever sticker" onclick="openProduct('stay', event)"><img${productImageStyle('stay')} src="${artworkUrl('product-stay-forever.png')}" alt="Stay child forever"></button>
+        <button class="board-item sticker-heart" aria-label="Thingsoftheart sticker" onclick="openProduct('heart', event)"><img${productImageStyle('heart')} src="${artworkUrl('product-things-heart.png')}" alt="Thingsoftheart"></button>
+        <button class="board-item sticker-star" aria-label="Wish star sticker" onclick="openProduct('star', event)"><img${productImageStyle('star')} src="${artworkUrl('product-wish-star.png')}" alt="Wish star"></button>`}
     </div>
     <p class="shop-caption">EXPECT FOR NEXT PHASE!</p>
   </main>`;
@@ -538,7 +542,7 @@ function productPage() {
   return `<main class="product-screen ${heightClass}">
     ${titlebar('Shop')}
     ${shopTabs(mirror)}
-    <div class="${artClass}" aria-label="${product.name}"><img style="view-transition-name:product-image" src="${A + product.image}" alt="${product.name}"></div>
+    <div class="${artClass}" aria-label="${product.name}"><img style="view-transition-name:product-image" src="${artworkUrl(product.image)}" alt="${product.name}"></div>
     <div class="size-tag">${product.size}</div>
     <section class="detail-panel" style="top:${panelTop}px;view-transition-name:product-details-panel" aria-label="${product.name} details">
       <h2>${product.name}</h2>
@@ -563,11 +567,11 @@ function goShopTab(tab) {
 function myBoxPage() {
   const items = products.filter((product) => state.cart[product.id] > 0);
   const subtotal = cartSubtotal(items);
-  const cards = items.map((product, i) => `<article class="box-card" style="top:${229 + i * 170}px">
+  const cards = items.map((product, i) => `<article class="box-card" style="top:${249 + i * 170}px">
     <div class="box-card-title">${product.name}</div>
     <div class="box-card-size">${product.size.replace('×', 'x')}</div>
     <div class="box-card-price">${product.price.toLocaleString('en-US')} yen</div>
-    <img class="box-card-art" src="${A + product.image}" alt="">
+    <img class="box-card-art" src="${artworkUrl(product.image)}" alt="">
     <div class="box-divider"></div>
     <div class="box-quantity">
       <button class="remove-item" aria-label="Remove ${product.name}" onclick="removeFromBox('${product.id}')">${trashSvg()}</button>
@@ -578,13 +582,13 @@ function myBoxPage() {
   </article>`).join('');
   return `<main class="mybox-screen">
     <div class="mybox-title"><span class="box-icon" aria-hidden="true">${boxSvg()}</span><span>My Box</span></div>
+    <h2 class="mybox-intro">Ready for a little joy?</h2>
     ${cards || `<div class="empty-box"><p>Your box is waiting for a little joy.</p><button onclick="go('shop')">Browse toys</button></div>`}
     <section class="box-checkout-summary" style="top:${boxSummaryTop(items.length)}px">
       <p class="box-subtotal">SUBTOTAL <strong>¥${subtotal.toLocaleString('en-US')}</strong></p>
-      <button id="shopify-checkout-button" class="checkout-pay-button" onclick="startShopifyCheckout()" ${checkoutConfigReady(items) ? '' : 'disabled'}>Continue to Shopify checkout</button>
-      <h2>Ready for a little joy?</h2>
       <p class="checkout-note">送料はShopifyの決済画面でご確認いただけます。</p>
       <p id="shopify-checkout-status" class="checkout-status" role="status">${!items.length ? '商品を追加するとShopify決済に進めます。' : checkoutConfigReady(items) ? 'Shopifyの安全な決済画面へ進みます。' : '現在、決済への接続を準備しています。'}</p>
+      <button id="shopify-checkout-button" class="checkout-pay-button" onclick="startShopifyCheckout()" ${checkoutConfigReady(items) ? '' : 'disabled'}>Continue to Shopify checkout</button>
       <button class="checkout-back" onclick="go('shop')">← Back to Shop</button>
     </section>
   </main>`;
@@ -601,7 +605,7 @@ function checkoutConfigReady(items) {
 }
 
 function boxSummaryTop(count) {
-  return count ? 404 + (count - 1) * 170 : 365;
+  return count ? 424 + (count - 1) * 170 : 385;
 }
 
 async function startShopifyCheckout() {
@@ -661,7 +665,14 @@ function trashSvg() {
 
 let noticeTimer;
 function cartNoticeContent() {
-  return `<span class="box-icon">${boxSvg()}</span><span>My Boxに追加しました</span><button onclick="go('mybox')">My Boxを見る</button>`;
+  return `<span>Boxに追加されました</span>`;
+}
+
+function clearCartNotice() {
+  window.clearTimeout(noticeTimer);
+  state.cartNoticeVisible = false;
+  const notice = document.getElementById('cart-notice');
+  if (notice) notice.hidden = true;
 }
 
 function showCartNotice() {
@@ -690,6 +701,12 @@ function updateFloatingBox() {
   button.style.right = `${Math.max(16, window.innerWidth - rect.right + 16)}px`;
   button.style.bottom = `${bottom}px`;
   button.hidden = footerTop < 72 || state.menuOpen;
+  const notice = document.getElementById('cart-notice');
+  if (notice) {
+    notice.hidden = !state.cartNoticeVisible || button.hidden || state.page === 'mybox';
+    notice.style.right = `${Math.max(16, window.innerWidth - rect.right + 16) + button.offsetWidth + 12}px`;
+    notice.style.bottom = `${bottom + (button.offsetHeight - notice.offsetHeight) / 2}px`;
+  }
 }
 
 function updatePageGeometry() {
@@ -789,6 +806,7 @@ function screenContent() {
 }
 
 function render() {
+  if (state.page === 'mybox') clearCartNotice();
   if (state.isLoading) {
     app.innerHTML = loadingPage();
     state.hasRendered = true;
