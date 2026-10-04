@@ -111,7 +111,7 @@ html[data-navigation-motion="footer-slide"]::view-transition-new(root) { animati
 ::view-transition-new(shop-tab-label-sticker) { animation: crossfade-in 500ms cubic-bezier(.42, 0, .58, 1) both; }
 @keyframes product-panel-enter { from { transform: translateX(-100%); } to { transform: translateX(0); } }
 @keyframes product-panel-leave { from { transform: translateX(0); } to { transform: translateX(-100%); } }
-::view-transition-new(product-details-panel) { animation: product-panel-enter 650ms cubic-bezier(.22, 1, .36, 1) both; }
+::view-transition-new(product-details-panel) { animation: product-panel-enter 1100ms cubic-bezier(.4, 0, .2, 1) 500ms both; }
 ::view-transition-old(product-details-panel) { animation: product-panel-leave 650ms cubic-bezier(.22, 1, .36, 1) both; }
 .fallback-crossfade-out {
   position: absolute !important;
@@ -944,6 +944,21 @@ html[data-navigation-motion="footer-slide"]::view-transition-new(root) { animati
   white-space: pre-wrap;
   overflow-wrap: anywhere;
 }
+.policy-purpose-table {
+  width: 100%;
+  border-collapse: collapse;
+  table-layout: fixed;
+  white-space: normal;
+  font: inherit;
+}
+.policy-purpose-table th,
+.policy-purpose-table td {
+  padding: 4px 6px 4px 0;
+  text-align: left;
+  vertical-align: top;
+}
+.policy-purpose-table th:last-child,
+.policy-purpose-table td:last-child { width: 52px; text-align: center; padding-right: 0; }
 
 /* Menu overlay stays within the mobile frame while the drawer enters from the right. */
 .menu-backdrop {
@@ -1111,7 +1126,7 @@ html[data-navigation-motion="footer-slide"]::view-transition-new(root) { animati
 .add-circle::after { transform: translate(-50%, -50%) rotate(90deg); }
 .send-button { display: grid; place-items: center; padding: 0; line-height: 1; }
 html[data-navigation-motion="product-panel"]::view-transition-old(root), html[data-navigation-motion="product-panel"]::view-transition-new(root) { animation: none; opacity: 1; }
-.panel-slide-in { animation: product-panel-enter 650ms cubic-bezier(.22, 1, .36, 1) both; }
+.panel-slide-in { animation: product-panel-enter 1100ms cubic-bezier(.4, 0, .2, 1) 500ms both; }
 .box-quantity { display: grid; grid-template-columns: repeat(4, 1fr); justify-items: center; }
 .box-quantity .remove-item { position: relative; width: 24px; margin: 0; border: 0; }
 .box-quantity .remove-item::after { content: ''; position: absolute; top: 7px; right: -3px; height: 10px; border-right: 1px solid #ffc067; }

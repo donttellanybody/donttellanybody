@@ -18,6 +18,6 @@ These SVGs were exported from the original Figma editor. No paths were redrawn.
 
 ## High resolution artwork replacements
 
-`character-17.png` through `character-29.png` and `character-21-edge.png` are exported from the PDF-compatible vector artwork in the user-provided `colorful_objects.ai`. The source is rendered at 8 pixels per PDF point. Individual figures retain the previous canvas proportions, transparent margins and orientation, at four times the previous output dimensions. The edge variant retains its bottom clipping. No characters are generated or redrawn.
+`character-17.png` through `character-29.png` and `character-21-edge.png` are exported from the PDF-compatible vector artwork in the user-provided `colorful_objects.ai`. The source is rendered at 8 pixels per PDF point. Individual figures retain the previous canvas proportions, transparent margins and orientation, at four times the previous output dimensions. The edge variant contains the complete blank green clover without bottom clipping. No characters are generated or redrawn.
 
 The five active product images are derived from the supplied `staychildforever.png`, `thingsoftheart.png`, `wish star.png`, `timetodream mirror.png` and `shunshine mirror.png`. Their transparent margins and rotations are matched to the previous site artwork, preserving the existing display geometry. Output sizes: Stay 752×740, Heart 1236×1240, Wish star 1080×1084, and each mirror 3600×3600. Source resolution and detail, rather than output dimensions alone, determine sharpness.

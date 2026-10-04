@@ -1,5 +1,5 @@
 const A = './assets/';
-const ARTWORK_VERSION = '20261004-1';
+const ARTWORK_VERSION = '20261004-2';
 function artworkUrl(file) {
   return `${A}${file}?v=${ARTWORK_VERSION}`;
 }
@@ -44,9 +44,11 @@ const frameHeight = {
   'product-dream': 1090, 'product-sunshine': 1108
 };
 
+const CART_SESSION_KEY = 'dtay-cart-session-v1';
+
 function readCart() {
   try {
-    const saved = localStorage.getItem('dtay-cart');
+    const saved = sessionStorage.getItem(CART_SESSION_KEY);
     if (saved === null) return {};
     const parsed = JSON.parse(saved);
     if (!parsed || typeof parsed !== 'object' || Array.isArray(parsed)) return {};
@@ -156,7 +158,7 @@ function closeProduct() {
 }
 
 function saveCart() {
-  try { localStorage.setItem('dtay-cart', JSON.stringify(state.cart)); } catch { /* local preview can run with storage disabled */ }
+  try { sessionStorage.setItem(CART_SESSION_KEY, JSON.stringify(state.cart)); } catch { /* local preview can run with storage disabled */ }
 }
 
 function addToBox(id) {
@@ -286,11 +288,11 @@ function productImageStyle(id) {
 
 const flow3CharacterLayouts = {
   home: [
-    { src: 'character-21-edge.png', left: 0, top: 395.5, width: 40, height: 32.5 },
+    { src: 'character-21-edge.png', left: 0, top: 388.5, width: 40 },
     { id: 20, left: 6, top: 359.5, width: 108, height: 60 },
     { id: 25, left: 58.5, top: 383.5, width: 87.7, height: 57 },
     { id: 23, left: 113, top: 362, width: 71.3, height: 63.9 },
-    { id: 27, left: 183, top: 383, width: 77.6, height: 62.8 },
+    { id: 27, left: 166, top: 383, width: 77.6, height: 62.8 },
     { id: 26, left: 220.5, top: 370, width: 71, height: 45 },
     { id: 29, left: 252.7, top: 354.3, width: 122.2, height: 95 },
     { id: 28, left: 344.6, top: 390.3, width: 57.8, height: 25.5 },
@@ -721,6 +723,12 @@ function updatePageGeometry() {
     footer.style.top = `${footerY}px`;
     board.style.setProperty('--frame-height', `${footerY + 200}px`);
   }
+  if (board?.classList.contains('screen-policy') && footer) {
+    const body = board.querySelector('.legal-copy');
+    const footerY = body.offsetTop + body.offsetHeight + 32;
+    footer.style.top = `${footerY}px`;
+    board.style.setProperty('--frame-height', `${footerY + 200}px`);
+  }
   updateFloatingBox();
 }
 
@@ -761,8 +769,16 @@ function legalPage(page) {
   const layout = legalLayout[page];
   return `<main class="legal-screen legal-${page}">
     <h1 class="legal-title">${doc.title}</h1>
-    <article class="legal-copy" style="left:${layout.left}px;top:${layout.top}px;width:${layout.width}px;--legal-line:${layout.line}px">${escapeHtml(doc.body)}</article>
+    <article class="legal-copy" style="left:${layout.left}px;top:${layout.top}px;width:${layout.width}px;--legal-line:${layout.line}px">${page === 'policy' ? policyBodyHtml(doc.body) : escapeHtml(doc.body)}</article>
   </main>`;
+}
+
+function policyBodyHtml(body) {
+  return body.split(/(対象情報\t利用目的\t保有個人情報\n(?:[^\n]*\t[^\n]*\n?)+)/).map((part) => {
+    if (!part.startsWith('対象情報\t')) return escapeHtml(part);
+    const rows = part.trim().split('\n').map((row) => row.split('\t'));
+    return `<table class="policy-purpose-table"><thead><tr>${rows[0].map((cell) => `<th scope="col">${escapeHtml(cell)}</th>`).join('')}</tr></thead><tbody>${rows.slice(1).map((row) => `<tr>${row.map((cell) => `<td>${escapeHtml(cell)}</td>`).join('')}</tr>`).join('')}</tbody></table>`;
+  }).join('');
 }
 
 function escapeHtml(value) {
