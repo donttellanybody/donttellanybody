@@ -6,6 +6,28 @@
   font-display: swap;
 }
 
+@font-face {
+  font-family: "Climate Crisis";
+  src: url("./assets/ClimateCrisis-Regular.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 400;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Encode Sans Semi Condensed";
+  src: url("./assets/EncodeSansSemiCondensed-Black.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+}
+@font-face {
+  font-family: "Hero Japanese";
+  src: url("./assets/NotoSansJP-Black-Hero.ttf") format("truetype");
+  font-style: normal;
+  font-weight: 900;
+  font-display: swap;
+}
+
 :root {
   --paper: #fff8e9;
   --grid: #f3e5c7;
@@ -169,16 +191,18 @@ html[data-navigation-motion="footer-slide"]::view-transition-new(root) { animati
   right: 15px;
   display: flex;
   flex-direction: column;
-  justify-content: space-between;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
   width: 14px;
-  height: 11px;
+  height: 14px;
   margin: 0;
   padding: 0;
   border: 0;
   background: transparent;
   transform: translateY(-50%);
 }
-.menu-button i { display: block; width: 14px; height: 1.5px; background: #bd3434; }
+.menu-button i { display: block; flex: 0 0 2px; width: 14px; height: 2px; border-radius: 999px; background: #bd3434; }
 .footer-position { position: absolute; z-index: 5; left: 0; width: 100%; height: 200px; }
 .footer { position: relative; width: 100%; height: 200px; overflow: hidden; }
 .footer-art { position: absolute; inset: 0; width: 100%; height: 200px; object-fit: fill; }
@@ -272,15 +296,56 @@ html[data-navigation-motion="footer-slide"]::view-transition-new(root) { animati
 .home-hero { position: absolute; inset: 0; }
 .hero-title-art {
   position: absolute;
-  top: 158px;
+  top: 150px;
   left: 37px;
   width: 319px;
-  height: 104px;
   margin: 0;
+  color: #e01616;
+  font-family: "Climate Crisis", sans-serif;
+  font-weight: 400;
+  font-size: 20px;
+  font-variation-settings: "YEAR" 1979;
+  font-synthesis: none;
+  line-height: 27.2px;
+  letter-spacing: 0;
+  text-shadow: 0 0 2px rgb(0 0 0 / 25%);
+  filter: url(#hero-letter-inset);
+  opacity: .85;
 }
-.hero-title-art > img:first-child { width: 319px; height: 70.2px; object-fit: fill; }
-.hero-title-art .reflection { width: 319px; height: 33.4px; object-fit: fill; }
-.hero-copy-art { position: absolute; top: 273px; left: 37px; width: 288px; height: 77px; object-fit: fill; }
+.hero-title-art span { display: block; white-space: nowrap; }
+.hero-title-art.reflection {
+  top: 213px;
+  color: #ca4848;
+  transform: scaleY(-.4757835);
+  transform-origin: center 35.1px;
+  filter: url(#hero-mirror-inset);
+  opacity: .5;
+  pointer-events: none;
+  user-select: none;
+}
+.hero-text-effects { position: absolute; pointer-events: none; }
+.hero-copy-art {
+  position: absolute;
+  top: 267.7px;
+  left: 37px;
+  width: 288px;
+  margin: 0;
+  color: #bd3434;
+  font-family: "Encode Sans Semi Condensed", "Hero Japanese", "Noto Sans JP", sans-serif;
+  font-size: 7.5px;
+  font-weight: 900;
+  font-synthesis: none;
+  line-height: 18px;
+  letter-spacing: .25em;
+  -webkit-text-stroke: 1px rgb(255 251 242 / 80%);
+  paint-order: stroke fill;
+  text-shadow: 0 0 4px #fff, 0 0 1px rgb(202 72 72 / 50%);
+}
+.hero-copy-art p { margin: 0; white-space: nowrap; }
+.hero-copy-art .hero-hush { font-size: 9px; }
+.hero-whisper { display: inline-block; width: 36px; letter-spacing: 0; text-align: center; }
+.hero-whisper > span { display: inline-block; transform: scaleX(4); }
+.hero-copy-art strong { font-size: 10px; font-weight: 900; }
 .sprite { position: absolute; object-fit: contain; pointer-events: none; }
 .ambient-character-field { position: absolute; z-index: 0; inset: 0; pointer-events: none; }
 .ambient-character { object-fit: contain; }
@@ -1031,10 +1096,9 @@ html[data-navigation-motion="footer-slide"]::view-transition-new(root) { animati
 .drawer-social { width: 144px; display: grid; grid-template-columns: repeat(4, 1fr); gap: 0; }
 .social-mark, .social-note, .social-youtube, .footer-social-row .social-note, .footer-social-row .social-youtube { width: 32px; min-width: 0; height: 26px; }
 .social-mark img, .footer-social-row .social-mark img { width: 22px; height: 22px; object-fit: contain; }
-.social-threads img { width: 18px; height: 18px; }
-.social-youtube img, .footer-social-row .social-youtube img { width: 23px; height: 17px; }
-.social-note img { width: 18px; height: 18px; }
-.hero-title-art .reflection { opacity: .5; }
+.social-threads img, .footer-social-row .social-threads img { width: 17.5px; height: 17.5px; }
+.social-youtube img, .footer-social-row .social-youtube img { width: 19px; height: 14px; }
+.social-note img, .footer-social-row .social-note img { width: 16.5px; height: 16.5px; }
 .story-copy { height: auto; }
 .drawer-links a.active { transform: none; border-color: #bd3434; }
 .drawer-mybox { display: grid; grid-template-columns: 28px 1fr 28px; gap: 0; }
@@ -1068,7 +1132,6 @@ html[data-navigation-motion="product-panel"]::view-transition-old(root), html[da
 .box-count { position: absolute; top: -3px; right: -3px; min-width: 19px; padding: 3px; border-radius: 12px; background: #bd3434; color: #fff8e9; font-family: var(--en); font-size: 9px; line-height: 1; letter-spacing: 0; }
 .cart-notice { position: fixed; z-index: 40; top: 134px; left: 50%; display: flex; align-items: center; gap: 8px; width: max-content; max-width: calc(100vw - 32px); padding: 12px 14px; border: 1px solid #ec9b2f; border-radius: 14px; background: #f3a73d; color: #fff8e9; box-shadow: 0 3px 10px #b5793433; transform: translateX(-50%); font-size: 10px; letter-spacing: 0; animation: crossfade-in 250ms ease both; }
 .cart-notice button { border: 0; border-radius: 8px; padding: 6px 8px; background: #fff8e9; color: #a76d28; font-family: var(--jp); font-size: 9px; }
-.footer-social-row .social-note img { width: 18px; height: 18px; }
 ::view-transition-group(floating-box) { animation: none; }
 ::view-transition-old(floating-box), ::view-transition-new(floating-box) { animation: none; opacity: 1; }
 .thanks-team { font-family: var(--en); font-size: 10px; letter-spacing: .02em; }

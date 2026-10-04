@@ -362,11 +362,32 @@ function ambientCharacters() {
 }
 
 function homePage() {
-  const copy = 'しーっ。ここは僕らのための秘密基地。誰にも言っちゃいけないからね。思いのままに自分自身を表現し、好きなモノに囲まれて過ごす場所。オモチャたちに映るのはとっても自由な、あなたのあるがままの姿。思い出そうよ、コドモゴコロ。あなたの夢は何ですか・・・？';
+  const title = '<span>LIKE CHILD.</span><span>PLAY WITH TOYS.</span><span>SHOW WHAT YOU ARE.</span>';
   return `<main class="home-screen">
     <section class="home-hero" aria-label="Like child. Play with toys. Show what you are.">
-      <h1 class="hero-title-art"><img src="${A}hero-title.svg" alt="LIKE CHILD. PLAY WITH TOYS. SHOW WHAT YOU ARE."><img class="reflection" src="${A}hero-reflection.svg" alt=""></h1>
-      <img class="hero-copy-art" src="${A}hero-copy.svg" alt="${copy}">
+      <svg class="hero-text-effects" width="0" height="0" aria-hidden="true"><defs>
+        <filter id="hero-letter-inset" x="-10%" y="-20%" width="120%" height="140%" color-interpolation-filters="sRGB">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="1.5" result="softAlpha"/>
+          <feComposite in="SourceAlpha" in2="softAlpha" operator="out" result="innerEdge"/>
+          <feFlood flood-color="white"/><feComposite in2="innerEdge" operator="in"/>
+          <feComposite in2="SourceGraphic" operator="over"/>
+        </filter>
+        <filter id="hero-mirror-inset" x="-10%" y="-25%" width="120%" height="150%" color-interpolation-filters="sRGB">
+          <feGaussianBlur in="SourceAlpha" stdDeviation="2" result="softAlpha"/>
+          <feComposite in="SourceAlpha" in2="softAlpha" operator="out" result="innerEdge"/>
+          <feFlood flood-color="white" flood-opacity=".8"/><feComposite in2="innerEdge" operator="in"/>
+          <feComposite in2="SourceGraphic" operator="over"/><feGaussianBlur stdDeviation="1.5"/>
+        </filter>
+      </defs></svg>
+      <h1 class="hero-title-art">${title}</h1>
+      <div class="hero-title-art reflection" aria-hidden="true">${title}</div>
+      <div class="hero-copy-art">
+        <p class="hero-hush">し<span class="hero-whisper"><span>ー</span></span>っ。</p>
+        <p>ここは僕らのための秘密基地。誰にも言っちゃいけないからね。</p>
+        <p>思いのままに自分自身を表現し、好きなモノに囲まれて過ごす場所。</p>
+        <p>オモチャたちに映るのはとっても自由な、あなたのあるがままの姿。</p>
+        <p>思い出そうよ、<strong>コドモゴコロ。</strong>あなたの夢は、何ですか？</p>
+      </div>
     </section>
     <section class="home-pickup">
       <h2 class="section-heading">Pickup Toys</h2>
@@ -564,7 +585,7 @@ function myBoxPage() {
       <h2>Ready for a little joy?</h2>
       <p class="checkout-note">送料はShopifyの決済画面でご確認いただけます。</p>
       <p id="shopify-checkout-status" class="checkout-status" role="status">${!items.length ? '商品を追加するとShopify決済に進めます。' : checkoutConfigReady(items) ? 'Shopifyの安全な決済画面へ進みます。' : '現在、決済への接続を準備しています。'}</p>
-      <button class="checkout-back" onclick="backToMyBoxItems()">← Back to My Box</button>
+      <button class="checkout-back" onclick="go('shop')">← Back to Shop</button>
     </section>
   </main>`;
 }
@@ -581,10 +602,6 @@ function checkoutConfigReady(items) {
 
 function boxSummaryTop(count) {
   return count ? 404 + (count - 1) * 170 : 365;
-}
-
-function backToMyBoxItems() {
-  document.querySelector('.mybox-title')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
 async function startShopifyCheckout() {
